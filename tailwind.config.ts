@@ -1,7 +1,6 @@
-import { type Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
+import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -19,30 +18,6 @@ export default {
       },
     },
     extend: {
-      // Добавляем новые градиенты
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-      },
-      // Добавляем анимации
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out forwards",
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -77,13 +52,61 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+        neon: {
+          blue: "#00f3ff",
+          purple: "#9000ff",
+          pink: "#ff00c8",
+          green: "#00ff8f",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-neon": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        glow: {
+          "0%, 100%": {
+            boxShadow:
+              "0 0 5px theme('colors.neon.blue'), 0 0 10px theme('colors.neon.blue')",
+          },
+          "50%": {
+            boxShadow:
+              "0 0 15px theme('colors.neon.blue'), 0 0 20px theme('colors.neon.blue')",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-neon": "pulse-neon 2s ease-in-out infinite",
+        glow: "glow 2s ease-in-out infinite",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
+export default config;

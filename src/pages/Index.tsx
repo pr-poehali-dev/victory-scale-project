@@ -10,6 +10,7 @@ const Index = () => {
   const [victories, setVictories] = useState<Victory[]>([]);
   const [loading, setLoading] = useState(true);
   const [maxVictories] = useState(20);
+  const [imageLoadErrors, setImageLoadErrors] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const fetchVictories = async () => {
@@ -38,32 +39,48 @@ const Index = () => {
     fetchVictories();
   }, []);
 
+  const handleImageError = (id: number) => {
+    setImageLoadErrors(prev => ({ ...prev, [id]: true }));
+  };
+
   // Вычисляем процент заполнения шкалы
   const progressValue = Math.min((victories.length / maxVictories) * 100, 100);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-900 text-white">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-blue-400">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-black text-white">
+      {/* Неоновый фон с градиентом */}
+      <div className="fixed inset-0 bg-black bg-opacity-90 overflow-hidden z-0">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-neon-purple/20 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-neon-blue/20 to-transparent"></div>
+        </div>
+      </div>
+      
+      <Card className="w-full max-w-md bg-black/60 border border-neon-blue/30 backdrop-blur-sm shadow-xl shadow-neon-blue/10 z-10 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-black/95 to-black"></div>
+        
+        <CardHeader className="text-center relative z-10">
+          <CardTitle className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple animate-pulse-neon">
             Шкала побед
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-neon-blue/80">
             {loading ? 
-              <Skeleton className="h-4 w-32 mx-auto bg-gray-700" /> : 
+              <Skeleton className="h-4 w-32 mx-auto bg-neon-blue/10" /> : 
               `Достижения: ${victories.length} / ${maxVictories}`
             }
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="pt-6 pb-8 px-6">
+        <CardContent className="pt-6 pb-8 px-6 relative z-10">
           <div className="flex">
             {/* Вертикальная шкала достижений */}
             <div className="relative w-full mb-8">
               {/* Шкала */}
-              <div className="relative h-[500px] w-8 mx-auto bg-gray-700 rounded-full overflow-hidden">
+              <div className="relative h-[500px] w-8 mx-auto bg-black/80 rounded-full overflow-hidden 
+                            border border-neon-blue/30 shadow-[0_0_5px_theme('colors.neon.blue')]">
                 <div 
-                  className="absolute bottom-0 w-full bg-gradient-to-t from-blue-600 to-purple-500 transition-all duration-1000 ease-out"
+                  className="absolute bottom-0 w-full bg-gradient-to-t from-neon-blue via-neon-purple to-neon-pink 
+                              transition-all duration-1000 ease-out shadow-[0_0_10px_theme('colors.neon.blue')] animate-pulse-neon"
                   style={{ height: `${progressValue}%` }}
                 />
                 
@@ -71,7 +88,7 @@ const Index = () => {
                 {Array.from({ length: 11 }).map((_, index) => (
                   <div 
                     key={`marker-${index}`}
-                    className="absolute w-8 h-0.5 bg-gray-600 left-0"
+                    className="absolute w-8 h-0.5 bg-neon-blue/20 left-0"
                     style={{ bottom: `${index * 10}%` }}
                   />
                 ))}
@@ -88,18 +105,34 @@ const Index = () => {
                     }}
                   >
                     <div className="group relative">
-                      <div className="w-12 h-12 flex items-center justify-center">
-                        <div className="w-5 h-5 bg-blue-500 rounded-full absolute right-1.5 z-10 
-                                      group-hover:bg-blue-400 group-hover:scale-125 transition-all"></div>
-                        <div className="h-0.5 w-10 bg-blue-500/50 absolute right-6"></div>
+                      <div className="w-16 h-12 flex items-center justify-center">
+                        <div className="h-0.5 w-10 bg-gradient-to-r from-neon-blue/20 to-neon-blue/80 absolute right-6"></div>
+                        <div className="flex items-center justify-center w-6 h-6 absolute right-1 z-10 
+                                      transition-all duration-300 
+                                      group-hover:scale-125 group-hover:brightness-125">
+                          {imageLoadErrors[victory.id] ? (
+                            <div className="w-5 h-5 rounded-full 
+                                         bg-gradient-to-r from-neon-blue to-neon-purple 
+                                         shadow-[0_0_8px_theme('colors.neon.blue')] animate-glow"></div>
+                          ) : (
+                            <img
+                              src={`/image/victory-${victory.id}.png`}
+                              alt={victory.title}
+                              className="w-full h-full object-contain"
+                              onError={() => handleImageError(victory.id)}
+                            />
+                          )}
+                        </div>
                       </div>
                       
-                      <div className="absolute right-14 top-0 transform -translate-y-1/2 opacity-0 
-                                    group-hover:opacity-100 transition-opacity duration-300 w-56 z-20">
-                        <Card className="p-3 bg-gray-800 border-gray-700">
-                          <p className="font-medium text-blue-400">{victory.title}</p>
+                      <div className="absolute right-16 top-0 transform -translate-y-1/2 opacity-0 
+                                    group-hover:opacity-100 transition-opacity duration-300 w-64 z-20">
+                        <Card className="p-3 bg-black/90 border border-neon-blue/50 
+                                       shadow-[0_0_10px_theme('colors.neon.blue'),0_0_5px_theme('colors.neon.purple')] 
+                                       backdrop-blur-md">
+                          <p className="font-medium text-neon-blue">{victory.title}</p>
                           <div className="flex justify-between items-center mt-2">
-                            <Badge variant="outline" className="text-xs bg-blue-900/30 text-blue-300 border-blue-700">
+                            <Badge className="text-xs bg-neon-purple/20 text-neon-purple border-neon-purple/50">
                               #{victory.id}
                             </Badge>
                           </div>
@@ -117,9 +150,9 @@ const Index = () => {
                         className="absolute right-0 w-full flex items-center justify-end"
                         style={{ bottom: `${(index / 4) * 100}%` }}
                       >
-                        <div className="w-12 h-12 flex items-center justify-center">
-                          <Skeleton className="w-5 h-5 rounded-full absolute right-1.5 bg-gray-700" />
-                          <Skeleton className="h-0.5 w-10 absolute right-6 bg-gray-700" />
+                        <div className="w-16 h-12 flex items-center justify-center">
+                          <Skeleton className="h-0.5 w-10 absolute right-6 bg-neon-blue/10" />
+                          <Skeleton className="w-5 h-5 rounded-full absolute right-1.5 bg-neon-blue/20" />
                         </div>
                       </div>
                     ))}
@@ -132,22 +165,25 @@ const Index = () => {
           {/* Информация о прогрессе */}
           <div className="mt-6 text-center">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-blue-400">0</span>
+              <span className="text-xs text-neon-blue">0</span>
               <div className="relative w-3/4 h-2">
-                <div className="absolute inset-0 rounded-full bg-gray-700"></div>
-                <Progress value={progressValue} className="h-2" />
+                <div className="absolute inset-0 rounded-full bg-black border border-neon-blue/30"></div>
+                <Progress 
+                  value={progressValue} 
+                  className="h-2 [&>div]:bg-gradient-to-r [&>div]:from-neon-blue [&>div]:to-neon-purple [&>div]:animate-pulse-neon"
+                />
               </div>
-              <span className="text-xs text-blue-400">{maxVictories}</span>
+              <span className="text-xs text-neon-blue">{maxVictories}</span>
             </div>
-            <p className="font-medium text-blue-400">
+            <p className="font-medium text-neon-purple">
               {loading ? 
-                <Skeleton className="h-5 w-40 mx-auto bg-gray-700" /> : 
+                <Skeleton className="h-5 w-40 mx-auto bg-neon-purple/10" /> : 
                 `${victories.length} из ${maxVictories} достижений`
               }
             </p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-neon-blue/70 mt-1">
               {loading ? 
-                <Skeleton className="h-4 w-52 mx-auto bg-gray-700" /> : 
+                <Skeleton className="h-4 w-52 mx-auto bg-neon-blue/10" /> : 
                 victories.length === 0 ? "Начните свой путь к славе!" :
                 victories.length >= maxVictories ? "Вы достигли легендарного статуса!" :
                 `Осталось еще ${maxVictories - victories.length} до максимума`
@@ -157,9 +193,9 @@ const Index = () => {
         </CardContent>
       </Card>
       
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-400">Данные загружены из battle.txt</p>
-        <p className="mt-1 text-xs text-gray-500">
+      <div className="mt-4 text-center relative z-10">
+        <p className="text-sm text-neon-purple/80">Данные загружены из battle.txt</p>
+        <p className="mt-1 text-xs text-neon-blue/60">
           Наведите на маркеры для просмотра информации
         </p>
       </div>
