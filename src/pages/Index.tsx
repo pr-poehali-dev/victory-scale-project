@@ -23,16 +23,6 @@ const Index = () => {
         setLoading(false);
       } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
-        // Создаем тестовые данные на случай ошибки
-        const mockConfig: ConfigData = {
-          maxVictories: 20,
-          victories: [
-            { id: 1, name: "Победа над Кромом Жестоким", description: "Легендарная битва" },
-            { id: 2, name: "Сокрушение крепости Рагнарёк", description: "Неприступная крепость пала" },
-            { id: 3, name: "Захват города Норвейл", description: "Важный стратегический пункт" }
-          ]
-        };
-        setConfig(mockConfig);
         setLoading(false);
       }
     };
@@ -103,8 +93,23 @@ const Index = () => {
                   >
                     <div className="group relative">
                       <div className="w-12 h-12 flex items-center justify-center">
-                        <div className="w-5 h-5 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full absolute right-1.5 z-10 
-                                        group-hover:scale-125 transition-transform duration-300 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                        <div className="w-10 h-10 flex items-center justify-center absolute right-1 z-10 
+                                        group-hover:scale-125 transition-transform duration-300">
+                          <img 
+                            src={`/image/victory-${victory.id}.png`} 
+                            alt={victory.name}
+                            onError={(e) => {
+                              // Fallback to a neon circle if image doesn't load
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              (e.target as HTMLImageElement).nextElementSibling!.style.display = 'block';
+                            }}
+                            className="w-full h-full object-contain drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]"
+                          />
+                          <div 
+                            className="w-5 h-5 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full hidden
+                                      shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+                          ></div>
+                        </div>
                         <div className="h-0.5 w-10 bg-gradient-to-r from-cyan-400 to-transparent absolute right-6 group-hover:w-14 transition-all duration-300"></div>
                       </div>
                       
